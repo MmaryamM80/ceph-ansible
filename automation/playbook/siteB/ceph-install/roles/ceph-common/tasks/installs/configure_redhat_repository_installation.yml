@@ -1,0 +1,31 @@
+---
+- name: Configure epel repository
+  ansible.builtin.package:
+    name: epel-release
+  register: result
+  until: result is succeeded
+  tags: with_pkg
+  when:
+    - ansible_facts['distribution'] == 'Rocky'
+
+- name: Include redhat_community_repository.yml
+  ansible.builtin.include_tasks: redhat_community_repository.yml
+  when: ceph_repository == 'community'
+
+- name: include redhat_rhcs_repository.yml
+  include_tasks: redhat_rhcs_repository.yml
+  when: ceph_repository == 'rhcs'
+
+- name: include redhat_dev_repository.yml
+  include_tasks: redhat_dev_repository.yml
+  when: ceph_repository == 'dev'
+
+- name: include redhat_custom_repository.yml
+  include_tasks: redhat_custom_repository.yml
+  when: ceph_repository == 'custom'
+
+# Remove yum caches so yum doesn't get confused if we are reinstalling a different ceph version
+- name: purge yum cache
+  command: yum clean all
+  changed_when: false
+  when: ansible_facts['pkg_mgr'] == 'yum'

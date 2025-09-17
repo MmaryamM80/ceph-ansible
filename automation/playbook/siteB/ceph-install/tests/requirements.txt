@@ -1,0 +1,12 @@
+# These are Python requirements needed to run the functional tests
+pytest-testinfra
+pytest-xdist
+pytest
+ansible-core>=2.15,<2.16
+Jinja2>=2.10
+netaddr
+mock
+jmespath
+pytest-rerunfailures
+pytest-cov
+setuptools
