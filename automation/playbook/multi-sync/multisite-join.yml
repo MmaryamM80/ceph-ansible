@@ -1,0 +1,22 @@
+- hosts: rgws
+  become: true
+  tasks:
+    - name: Pull realm from site A
+      command: >
+        radosgw-admin realm pull
+        --url=http://rgw1.sitea.local:8080
+        --access-key={{ multisite_access_key }}
+        --secret={{ multisite_secret_key }}
+
+    - name: Create zone for site B
+      command: >
+        radosgw-admin zone create
+        --rgw-zone={{ multisite_zone_b }}
+        --rgw-zonegroup={{ multisite_zonegroup }}
+        --endpoints=http://{{ inventory_hostname }}:8080
+        --access-key={{ multisite_access_key }}
+        --secret={{ multisite_secret_key }}
+
+    - name: Commit period
+      command: radosgw-admin period update --commit
+

@@ -1,0 +1,27 @@
+- hosts: rgws
+  become: true
+  tasks:
+    - name: Create realm
+      command: radosgw-admin realm create --rgw-realm={{ multisite_realm }} --default
+      args:
+        creates: /etc/ceph/realm.created
+
+    - name: Create zonegroup
+      command: radosgw-admin zonegroup create --rgw-zonegroup={{ multisite_zonegroup }} --master --default
+      args:
+        creates: /etc/ceph/zonegroup.created
+
+    - name: Create master zone for site A
+      command: >
+        radosgw-admin zone create
+        --rgw-zone={{ multisite_zone_a }}
+        --rgw-zonegroup={{ multisite_zonegroup }}
+        --master --default
+        --endpoints=http://{{ inventory_hostname }}:8080
+        --access-key={{ multisite_access_key }}
+        --secret={{ multisite_secret_key }}
+      args:
+        creates: /etc/ceph/zone.created
+
+    - name: Commit period
+      command: radosgw-admin period update --commit

@@ -1,0 +1,17 @@
+2025-09-17 09:58:06,239 - INFO - Starting radosgw-admin for site A
+2025-09-17 09:58:06,239 - INFO - Running command: radosgw-admin --conf=/etc/ceph/ceph.conf --keyring=None bucket list
+2025-09-17 09:58:06,292 - ERROR - Command failed with code 1, stderr: 2025-09-17T09:58:06.281+0000 7f01c2843980 -1 auth: unable to find a keyring on None: (2) No such file or directory
+2025-09-17T09:58:06.281+0000 7f01c2843980 -1 AuthRegistry(0x563d0c5bb970) no keyring found at None, disabling cephx
+2025-09-17T09:58:06.285+0000 7f01c2843980 -1 auth: unable to find a keyring on None: (2) No such file or directory
+2025-09-17T09:58:06.285+0000 7f01c2843980 -1 AuthRegistry(0x7ffea91d8140) no keyring found at None, disabling cephx
+2025-09-17T09:58:06.285+0000 7f01bfb36640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [1]
+2025-09-17T09:58:06.285+0000 7f01c0b38640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [1]
+2025-09-17T09:58:06.285+0000 7f01c0337640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [1]
+2025-09-17T09:58:06.285+0000 7f01c2843980 -1 monclient: authenticate NOTE: no keyring found; disabled cephx authentication
+failed to fetch mon config (--no-mon-config to skip)
+2025-09-17 09:59:49,697 - INFO - Starting radosgw-admin for site A
+2025-09-17 09:59:49,697 - INFO - Running command: radosgw-admin --conf=/etc/ceph/ceph.conf --keyring=/etc/ceph/ceph.client.admin.keyring bucket list
+2025-09-17 09:59:50,003 - INFO - Command succeeded, output length: 37
+2025-09-17 09:59:50,004 - INFO - Retrieved 2 buckets for site A
+2025-09-17 09:59:50,004 - INFO - Site A bucket: new-bucket
+2025-09-17 09:59:50,004 - INFO - Site A bucket: mybucket
