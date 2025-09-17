@@ -1,19 +1,19 @@
 # Deploying ceph with ansible  and sync with multisite
 
 ## Topology Guid
-                                                          ┌───────────────┐
-                                                          │    Site A     │
-                                                          │  Ceph Cluster │
-                                                          │ RGW Zone: A   │
-                                                          └───────┬───────┘
-                                                                  │
-                                                               Multi-site
-                                                                  │
-                                                          ┌───────┴───────┐
-                                                          │    Site B     │
-                                                          │  Ceph Cluster │
-                                                          │ RGW Zone: B   │
-                                                          └───────────────┘
+                                       ┌───────────────┐
+                                       │    Site A     │
+                                       │  Ceph Cluster │
+                                       │ RGW Zone: A   │
+                                       └───────┬───────┘
+                                               │
+                                           Multi-site
+                                               │
+                                       ┌───────┴───────┐
+                                       │    Site B     │
+                n                      │  Ceph Cluster │
+                                       │ RGW Zone: B   │
+                                       └───────────────┘
                  
 ### Directory Structure
 
