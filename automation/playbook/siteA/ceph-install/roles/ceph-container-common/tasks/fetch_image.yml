@@ -1,0 +1,80 @@
+---
+- name: "pulling {{ ceph_docker_registry }}/{{ ceph_docker_image }}:{{ ceph_docker_image_tag }} image"
+  command: "{{ timeout_command }} {{ container_binary }} pull {{ ceph_docker_registry }}/{{ ceph_docker_image }}:{{ ceph_docker_image_tag }}"
+  changed_when: false
+  register: docker_image
+  until: docker_image.rc == 0
+  retries: "{{ docker_pull_retry }}"
+  delay: 10
+  when: (ceph_docker_dev_image is undefined or not ceph_docker_dev_image | bool)
+  environment:
+    HTTP_PROXY: "{{ ceph_docker_http_proxy | default('') }}"
+    HTTPS_PROXY: "{{ ceph_docker_https_proxy | default('') }}"
+    NO_PROXY: "{{ ceph_docker_no_proxy }}"
+
+- name: "pulling alertmanager/prometheus/grafana container images"
+  command: "{{ timeout_command }} {{ container_binary }} pull {{ item }}"
+  changed_when: false
+  register: monitoring_images
+  until: monitoring_images.rc == 0
+  retries: "{{ docker_pull_retry }}"
+  delay: 10
+  loop:
+    - "{{ alertmanager_container_image }}"
+    - "{{ prometheus_container_image }}"
+    - "{{ grafana_container_image }}"
+  when:
+    - dashboard_enabled | bool
+    - inventory_hostname in groups.get(monitoring_group_name, [])
+  environment:
+    HTTP_PROXY: "{{ ceph_docker_http_proxy | default('') }}"
+    HTTPS_PROXY: "{{ ceph_docker_https_proxy | default('') }}"
+    NO_PROXY: "{{ ceph_docker_no_proxy }}"
+
+- name: "pulling node-exporter container image"
+  command: "{{ timeout_command }} {{ container_binary }} pull {{ node_exporter_container_image }}"
+  changed_when: false
+  register: node_exporter_image
+  until: node_exporter_image.rc == 0
+  retries: "{{ docker_pull_retry }}"
+  delay: 10
+  when:
+    - dashboard_enabled | bool
+    - inventory_hostname in groups.get(mon_group_name, []) or
+      inventory_hostname in groups.get(osd_group_name, []) or
+      inventory_hostname in groups.get(mds_group_name, []) or
+      inventory_hostname in groups.get(rgw_group_name, []) or
+      inventory_hostname in groups.get(mgr_group_name, []) or
+      inventory_hostname in groups.get(rbdmirror_group_name, []) or
+      inventory_hostname in groups.get(nfs_group_name, []) or
+      inventory_hostname in groups.get(iscsi_gw_group_name, []) or
+      inventory_hostname in groups.get(monitoring_group_name, [])
+  environment:
+    HTTP_PROXY: "{{ ceph_docker_http_proxy | default('') }}"
+    HTTPS_PROXY: "{{ ceph_docker_https_proxy | default('') }}"
+    NO_PROXY: "{{ ceph_docker_no_proxy }}"
+
+- name: export local ceph dev image
+  command: >
+    {{ container_binary }} save -o "/tmp/{{ ceph_docker_username }}-{{ ceph_docker_imagename }}-{{ ceph_docker_image_tag }}.tar"
+    "{{ ceph_docker_username }}/{{ ceph_docker_imagename }}:{{ ceph_docker_image_tag }}"
+  delegate_to: localhost
+  when: (ceph_docker_dev_image is defined and ceph_docker_dev_image)
+  run_once: true
+
+- name: copy ceph dev image file
+  copy:
+    src: "/tmp/{{ ceph_docker_username }}-{{ ceph_docker_imagename }}-{{ ceph_docker_image_tag }}.tar"
+    dest: "/tmp/{{ ceph_docker_username }}-{{ ceph_docker_imagename }}-{{ ceph_docker_image_tag }}.tar"
+  when: (ceph_docker_dev_image is defined and ceph_docker_dev_image | bool)
+
+- name: load ceph dev image
+  command: "{{ container_binary }} load -i /tmp/{{ ceph_docker_username }}-{{ ceph_docker_imagename }}-{{ ceph_docker_image_tag }}.tar"
+  when: (ceph_docker_dev_image is defined and ceph_docker_dev_image | bool)
+
+- name: remove tmp ceph dev image file
+  file:
+    name: "/tmp/{{ ceph_docker_username }}-{{ ceph_docker_imagename }}-{{ ceph_docker_image_tag }}.tar"
+    state: absent
+  when: (ceph_docker_dev_image is defined and ceph_docker_dev_image | bool)
+
