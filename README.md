@@ -22,7 +22,7 @@ automation/
 ├── playbook/
 │   ├── siteA/               # Ceph deployment for Site A
 │   │   ├── inventory.ini
-│   │   └── ceph-ansible/    # Ceph ansible clone directory
+│   │   └── ceph-install/    # Ceph ansible clone directory
 │   ├── siteB/               # Ceph deployment for Site B
 │   ├── multi-sync/          # Multisite configuration tasks
 │   │   ├── rgw-install.yml
